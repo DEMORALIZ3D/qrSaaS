@@ -88,18 +88,18 @@ const defaultOpts: Options = {
 };
 
 const CreateStaticQRCode = () => {
-  const [opts, setOpts] = useState<Partial<Options>>({
-    data: "",
-  });
+  const [opts, setOpts] = useState<Partial<Options>>(defaultOpts);
   const qrCodeRef = useRef<QRCodeStyling | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const updateQRCode = useDebounce((value: Partial<Options>) => {
+  const handleDownload = () => {
     if (qrCodeRef.current) {
-      console.log("500ms delay", { value });
-      qrCodeRef.current.update(value);
+      qrCodeRef.current.download({
+        name: `PowQR-${new Date().toJSON()}`,
+        extension: "svg",
+      });
     }
-  }, 500);
+  };
 
   useEffect(() => {
     if (!qrCodeRef.current) {
@@ -155,6 +155,10 @@ const CreateStaticQRCode = () => {
             xs: 12,
             sm: 6,
           }}
+          order={{
+            xs: 1,
+            sm: 2,
+          }}
         >
           <Card
             sx={{
@@ -171,6 +175,9 @@ const CreateStaticQRCode = () => {
               ref={containerRef}
               style={{ transition: "all 0.2s ease-in-out" }}
             />
+            <Button variant="contained" onClick={handleDownload} sx={{ mt: 2 }}>
+              Download
+            </Button>
           </Card>
         </Grid2>
       </Grid2>

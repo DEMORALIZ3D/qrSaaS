@@ -30,10 +30,9 @@ export const PopoverPicker = ({
       <Box
         className="swatch"
         sx={{
-          width: 28,
+          width: "100%",
           height: 28,
-          borderRadius: 8,
-          border: `3px solid #fff`,
+          borderRadius: "4px",
           boxShadow: `0 0 0 1px rgba(0, 0, 0, 0.1), inset 0 0 0 1px rgba(0, 0, 0, 0.1)`,
           cursor: `pointer`,
           backgroundColor: colorRaw,
@@ -54,7 +53,10 @@ export const PopoverPicker = ({
         >
           <HexColorPicker
             color={colorRaw}
-            onChange={(value) => setColorRaw(value)}
+            onChange={(value) => {
+              onChange(value);
+              setColorRaw(value);
+            }}
             style={{ zIndex: 9999 }}
           />
         </Box>

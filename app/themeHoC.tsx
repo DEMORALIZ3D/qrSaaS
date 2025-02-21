@@ -1,7 +1,7 @@
 "use client";
-import { ThemeProvider } from "@emotion/react";
 import CssBaseline from "@mui/material/CssBaseline";
-import { createTheme } from "@mui/material/styles";
+// import { ThemeProvider } from "@mui/material/styles";
+import { createTheme, ThemeProvider } from "@mui/material";
 
 const theme = createTheme({
   // palette: {
@@ -19,12 +19,26 @@ const theme = createTheme({
     },
     MuiTextField: {
       defaultProps: {
+        variant: "outlined",
         size: "small",
       },
     },
     MuiSelect: {
       defaultProps: {
         size: "small", // Redundant, handled by InputBase, but good for explicitness.
+      },
+    },
+    MuiAccordion: {
+      defaultProps: {
+        disableGutters: true,
+      },
+    },
+    MuiAccordionDetails: {
+      styleOverrides: {
+        root: {
+          display: "flex",
+          flexDirection: "column",
+        },
       },
     },
   },

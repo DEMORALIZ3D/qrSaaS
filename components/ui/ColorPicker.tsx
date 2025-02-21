@@ -6,13 +6,13 @@ const ColourPicker = ({
   defaultColor,
   onChange,
 }: {
-  title: string;
+  title?: string;
   defaultColor: string;
   onChange: (newColor: string) => void;
 }) => {
   return (
-    <Box>
-      <Typography variant="caption">{title}</Typography>
+    <Box width="100%">
+      {title && <Typography variant="caption">{title}</Typography>}
       <PopoverPicker
         defaultColor={defaultColor ?? "#fff"}
         onChange={onChange}

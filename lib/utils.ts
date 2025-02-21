@@ -50,3 +50,37 @@ export function createAndSetNestedValue<T>(
   current[keys[keys.length - 1]] = value;
   return result;
 }
+
+export interface GradientOptions {
+  from: string;
+  to: string;
+  rotation?: number; // Optional rotation in degrees
+  type?: "linear" | "radial"; // Optional gradient type, defaults to linear
+  stops?: { color: string; position: number }[]; // Optional array of color stops.  Overrides from/to if present.
+}
+
+export function createGradientCSS(options: GradientOptions): string {
+  const { from, to, rotation = 0, type = "linear", stops } = options;
+
+  if (stops && stops.length > 0) {
+    // Handle multiple color stops
+    const stopString = stops
+      .sort((a, b) => a.position - b.position) // Ensure stops are in order
+      .map((stop) => `${stop.color} ${stop.position}%`)
+      .join(", ");
+
+    if (type === "radial") {
+      return `radial-gradient(circle, ${stopString})`;
+    } else {
+      return `linear-gradient(${rotation}deg, ${stopString})`;
+    }
+  } else {
+    // Handle simple from/to gradient
+
+    if (type === "radial") {
+      return `radial-gradient(circle, ${from}, ${to})`;
+    } else {
+      return `linear-gradient(${rotation}deg, ${from}, ${to})`;
+    }
+  }
+}
