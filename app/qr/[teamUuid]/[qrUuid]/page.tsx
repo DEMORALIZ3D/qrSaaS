@@ -1,17 +1,13 @@
 import { getQrCodeById } from "@/lib/db/qrQueries";
 import { getUser } from "@/lib/db/queries";
-import { QrTypeEnum } from "@/lib/db/schema";
 import { redirect, RedirectType } from "next/navigation";
-import { Props } from "next/script";
-import { GetServerSideProps } from "next/types";
-import { qrTypes } from "qr-code-styling";
 
 const Page = async ({
   params,
 }: {
-  params: { teamId: string; qrUuid: string };
+  params: Promise<{ teamId: string; qrUuid: string }>;
 }) => {
-  const { qrUuid, teamUuid } = params;
+  const { qrUuid, teamId } = await params;
 
   // You *must* adapt getUser to work with context in getServerSideProps
   const user = await getUser();
@@ -20,7 +16,7 @@ const Page = async ({
     redirect("/sign-out");
   }
 
-  const qrCode = await getQrCodeById(qrUuid as string);
+  const qrCode = await getQrCodeById(qrUuid);
   if (!qrCode) {
     return {
       notFound: true, // Return a 404
@@ -28,8 +24,7 @@ const Page = async ({
   }
 
   //add in logic to prevent users viewing other team's qrs:
-  console.log({ teamUuid, qId: qrCode.teamId });
-  if (Number(teamUuid) !== Number(qrCode.teamId)) {
+  if (Number(teamId) !== Number(qrCode.teamId)) {
     redirect("/dashboard");
   }
 
