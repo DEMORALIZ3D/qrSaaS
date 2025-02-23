@@ -1,56 +1,11 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-  ChangeEvent,
-} from "react";
-import QRCodeStyling, {
-  DrawType,
-  TypeNumber,
-  Mode,
-  ErrorCorrectionLevel,
-  DotType,
-  CornerSquareType,
-  CornerDotType,
-  Options,
-  FileExtension,
-} from "qr-code-styling";
-import {
-  Circle,
-  Contact,
-  Globe,
-  GripHorizontal,
-  HouseWifi,
-  QrCode,
-  RectangleHorizontal,
-  RefreshCw,
-  Square,
-  Upload,
-} from "lucide-react";
-import {
-  TextField,
-  Checkbox,
-  FormControlLabel,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
-  Button,
-  SelectChangeEvent,
-  Grid2,
-  Box,
-  Card,
-  Typography,
-  ButtonGroup,
-} from "@mui/material";
-import { PopoverPicker } from "@/components/ui/PopoverPicker";
-import { createAndSetNestedValue, updateNestedObject } from "@/lib/utils";
-import useDebounce from "@/hooks/useDebounce";
+import { useEffect, useState, useRef } from "react";
+import QRCodeStyling, { Options } from "qr-code-styling";
+
+import { Button, Grid2, Box, Card } from "@mui/material";
 import CustomiseQRForm from "./customiseQRForm";
+import { usePathname, useSearchParams } from "next/navigation";
 
 const defaultOpts: Options = {
   width: 300,
@@ -88,9 +43,26 @@ const defaultOpts: Options = {
 };
 
 const CreateStaticQRCode = () => {
+  const searchParams = useSearchParams();
+  const url = searchParams.get("url");
+  const pathName = usePathname();
+  const locaton = window.location;
   const [opts, setOpts] = useState<Partial<Options>>(defaultOpts);
   const qrCodeRef = useRef<QRCodeStyling | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (qrCodeRef) {
+      const value = `${location.protocol}//${location.hostname}${
+        locaton.port ? `:${locaton.port}` : ""
+      }${pathName}${url}`;
+      console.log("shouldUpdateURL");
+      setOpts((p) => ({ ...p, data: value }));
+      qrCodeRef.current?.update({
+        data: value,
+      });
+    }
+  }, [qrCodeRef, url]);
 
   const handleDownload = () => {
     if (qrCodeRef.current) {
