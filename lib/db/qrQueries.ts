@@ -1,19 +1,14 @@
 import { db } from "./drizzle"; // Import your Drizzle database instance
-import {
-  qrCodes,
-  linkPage,
-  NewQrCode,
-  NewLinkPage,
-  QrCode,
-  LinkPage,
-  Links,
-} from "./schema"; // Import your schema definitions
+import { qrCodes, linkPage, QrCode, NewLinkPage, Link } from "./schema"; // Import your schema definitions
 import { eq, and, isNull, desc } from "drizzle-orm";
 import { unstable_noStore as noStore } from "next/cache";
 
 // --- QR Codes CRUD ---
 
 // Create a new QR Code
+// Todo: Impliment below
+type NewQrCode = Omit<QrCode, "id" | "uuid" | "createdAt" | "updatedAt">;
+
 export async function createQrCode(qrCodeData: NewQrCode): Promise<QrCode> {
   noStore();
   try {
@@ -103,9 +98,7 @@ export async function deleteQrCode(id: number): Promise<QrCode> {
 // --- Link Page CRUD ---
 
 // Create a new Link Page
-export async function createLinkPage(
-  linkPageData: NewLinkPage
-): Promise<LinkPage> {
+export async function createLinkPage(linkPageData: NewLinkPage): Promise<Link> {
   noStore();
   try {
     const result = await db.insert(linkPage).values(linkPageData).returning();
@@ -120,7 +113,7 @@ export async function createLinkPage(
 }
 
 // Get all Link Pages by qrId
-export async function getLinkPagesByQrId(qrId: number): Promise<LinkPage[]> {
+export async function getLinkPagesByQrId(qrId: number): Promise<Link[]> {
   noStore();
   try {
     const result = await db
@@ -135,7 +128,7 @@ export async function getLinkPagesByQrId(qrId: number): Promise<LinkPage[]> {
 }
 
 // Get a single Link Page by ID
-export async function getLinkPageById(id: number): Promise<LinkPage | null> {
+export async function getLinkPageById(id: number): Promise<Link | null> {
   noStore();
   try {
     const result = await db
@@ -153,8 +146,8 @@ export async function getLinkPageById(id: number): Promise<LinkPage | null> {
 // Update a Link Page
 export async function updateLinkPage(
   id: number,
-  updateData: Partial<LinkPage>
-): Promise<LinkPage> {
+  updateData: Partial<Link>
+): Promise<Link> {
   noStore();
   try {
     const result = await db
@@ -173,7 +166,7 @@ export async function updateLinkPage(
 }
 
 // Delete a Link Page (soft delete)
-export async function deleteLinkPage(id: number): Promise<LinkPage> {
+export async function deleteLinkPage(id: number): Promise<Link> {
   noStore();
   try {
     const result = await db

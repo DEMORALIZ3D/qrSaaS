@@ -191,10 +191,20 @@ export type ActivityLog = typeof activityLogs.$inferSelect;
 export type NewActivityLog = typeof activityLogs.$inferInsert;
 export type Invitation = typeof invitations.$inferSelect;
 export type NewInvitation = typeof invitations.$inferInsert;
+export type QrCode = typeof qrCodes.$inferSelect;
+export type Link = typeof linkPage.$inferSelect;
+export type NewLinkPage = typeof linkPage.$inferInsert;
 export type TeamDataWithMembers = Team & {
   teamMembers: (TeamMember & {
     user: Pick<User, "id" | "name" | "email">;
   })[];
+};
+
+//In your insert schema, you'll have to make Links | null, same with styling
+export type NewLinkPage = {
+  links: Links | null;
+  socialLinks: Links | null;
+  styling: Styling | null;
 };
 
 export enum ActivityType {
