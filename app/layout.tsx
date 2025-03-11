@@ -8,10 +8,19 @@ import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { ThemeWrapper } from "./themeHoC";
 
 export const metadata: Metadata = {
-  title: "Next.js SaaS Starter",
-  description: "Get started quickly with Next.js, Postgres, and Stripe.",
+  title: "PowQr", // Use your application's title
+  description: "Your application description", // Add a description
+  applicationName: "PowQr", // For the apple-mobile-web-app-title
+  icons: {
+    icon: [
+      { url: "/favicon-96x96.png", sizes: "96x96" },
+      { url: "/favicon.svg", type: "image/svg+xml" }, // Specify type for SVG
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
+  manifest: "/site.webmanifest", // Add the manifest link
 };
-
 export const viewport: Viewport = {
   maximumScale: 1,
 };
