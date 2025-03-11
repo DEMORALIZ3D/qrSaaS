@@ -53,7 +53,7 @@ export function createAndSetNestedValue<T>(
 
 export interface GradientOptions {
   from: string;
-  to: string;
+  to?: string;
   rotation?: number; // Optional rotation in degrees
   type?: "linear" | "radial"; // Optional gradient type, defaults to linear
   stops?: { color: string; position: number }[]; // Optional array of color stops.  Overrides from/to if present.
@@ -84,3 +84,40 @@ export function createGradientCSS(options: GradientOptions): string {
     }
   }
 }
+
+export const deepMergeAndUpdate = <T>(target: T, source: DeepPartial<T>): T => {
+  const output: T = { ...target }; // Create a shallow copy of target
+
+  for (const key in source) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      const sourceValue = source[key];
+      const targetValue = target[key as keyof T];
+
+      if (
+        sourceValue !== null &&
+        typeof sourceValue === "object" &&
+        !Array.isArray(sourceValue) &&
+        Object.prototype.hasOwnProperty.call(target, key) &&
+        targetValue !== null &&
+        typeof targetValue === "object"
+      ) {
+        // Recursive call for nested objects
+        output[key as keyof T] = deepMergeAndUpdate(
+          targetValue as Record<string, unknown>, // More specific type assertion
+          sourceValue as Record<string, unknown> // More specific type assertion
+        ) as T[keyof T]; // Cast back to the correct property type
+      } else {
+        // Override or add the value from source
+        output[key as keyof T] = sourceValue as T[keyof T]; // Type assertion
+      }
+    }
+  }
+
+  return output;
+};
+
+export type DeepPartial<T> = T extends object
+  ? {
+      [P in keyof T]?: DeepPartial<T[P]>;
+    }
+  : T;

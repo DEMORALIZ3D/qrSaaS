@@ -24,7 +24,7 @@ const BackgroundForeground = ({
   debounceColour: (props: Partial<Options>) => void;
   defaultOpts: Options;
   opts: Partial<Options>;
-  setOpts: Dispatch<SetStateAction<Partial<Options>>>;
+  setOpts: Dispatch<SetStateAction<{ title: string } & Partial<Options>>>;
   MultiColourPickerChange: (
     nc: string | GradientOptions,
     type:

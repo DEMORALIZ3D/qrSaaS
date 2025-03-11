@@ -21,7 +21,7 @@ const QRImageOptions = ({
   qrCodeRef: RefObject<QRCodeStyling | null>;
   debouncedLog: (props: Partial<Options>) => void;
   opts: Partial<Options>;
-  setOpts: Dispatch<SetStateAction<Partial<Options>>>;
+  setOpts: Dispatch<SetStateAction<{ title: string } & Partial<Options>>>;
 }) => {
   return (
     <Accordion defaultExpanded={true}>

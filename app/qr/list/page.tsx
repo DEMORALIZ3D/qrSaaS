@@ -1,7 +1,15 @@
-import { useUser } from "@/lib/auth";
 import { getQrCodesByTeamId } from "@/lib/db/qrQueries";
 import { getTeamForUser, getUser, getUserWithTeam } from "@/lib/db/queries";
-import { Button, Typography } from "@mui/material";
+import {
+  Box,
+  Card,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
 import { redirect } from "next/navigation";
 import ViewButton from "./ViewButton";
 import ViewQRButton from "./viewQRButton";
@@ -16,30 +24,46 @@ const Page = async () => {
   const teamId = team?.id;
   const qrCodes = teamId && (await getQrCodesByTeamId(teamId));
 
-  console.log({ user, team, qrCodes });
-
   if (!teamId) {
     return null;
   }
 
   return (
-    <div>
-      <h1>My QR Codes</h1>
-      <ul>
-        {Array.isArray(qrCodes) &&
-          qrCodes?.map((qrCode) => (
-            <li key={qrCode.id}>
-              <Typography>{qrCode.friendlyName}</Typography>
-              <ViewButton teamId={teamId} qrUuid={qrCode.uuid} />
-              <ViewQRButton
-                teamId={teamId}
-                qrUuid={qrCode.uuid}
-                type={qrCode.type}
-              />
-            </li>
-          ))}
-      </ul>
-    </div>
+    <Box p={2}>
+      <Typography variant="h3" pb={2}>
+        My QR Codes
+      </Typography>
+      <Card>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell colSpan={2}>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {Array.isArray(qrCodes) &&
+              qrCodes?.map((qrCode) => (
+                <TableRow key={qrCode.id}>
+                  <TableCell>
+                    <Typography>{qrCode.friendlyName}</Typography>
+                  </TableCell>
+                  <TableCell>
+                    <ViewButton teamId={teamId} qrUuid={qrCode.uuid} />
+                  </TableCell>
+                  <TableCell>
+                    <ViewQRButton
+                      teamId={teamId}
+                      qrUuid={qrCode.uuid}
+                      type={qrCode.type}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
+          </TableBody>
+        </Table>
+      </Card>
+    </Box>
   );
 };
 

@@ -1,0 +1,1 @@
+ALTER TABLE "link_page" ALTER COLUMN "qr_id" DROP NOT NULL;

@@ -11,6 +11,13 @@ const theme = createTheme({
   // },
   //  need to find out why dfault props is not working
   components: {
+    MuiAccordionSummary: {
+      styleOverrides: {
+        root: {
+          background: "coral",
+        },
+      },
+    },
     MuiButton: {
       defaultProps: {
         size: "small",

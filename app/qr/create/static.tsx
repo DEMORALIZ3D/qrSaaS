@@ -3,62 +3,63 @@
 import { useEffect, useState, useRef } from "react";
 import QRCodeStyling, { Options } from "qr-code-styling";
 
-import { Button, Grid2, Box, Card } from "@mui/material";
+import {
+  Button,
+  Grid2,
+  Box,
+  Card,
+  ButtonGroup,
+  TextField,
+  AccordionSummary,
+  Accordion,
+  AccordionDetails,
+  AccordionActions,
+} from "@mui/material";
 import CustomiseQRForm from "./customiseQRForm";
 import { usePathname, useSearchParams } from "next/navigation";
-
-const defaultOpts: Options = {
-  width: 300,
-  height: 300,
-  type: "svg",
-  data: "http://qr-code-styling.com",
-  image: "/favicon.ico",
-  margin: 10,
-  qrOptions: {
-    typeNumber: 0,
-    mode: "Byte",
-    errorCorrectionLevel: "Q",
-  },
-  imageOptions: {
-    hideBackgroundDots: true,
-    imageSize: 0.4,
-    margin: 20,
-    crossOrigin: "anonymous",
-  },
-  dotsOptions: {
-    color: "#000",
-    type: "square",
-  },
-  backgroundOptions: {
-    color: "#fff",
-  },
-  cornersSquareOptions: {
-    color: "#000",
-    type: "square",
-  },
-  cornersDotOptions: {
-    color: "#000",
-    type: "square",
-  },
-};
+import { QrType } from "@/lib/db/schema";
+import useDebouncedCallback from "@/hooks/useDebounceState";
+import { defaultOpts } from "@/lib/qr";
+import QrTypeButtonGroup from "./QrTypeButtonGroup";
+import axios from "axios";
 
 const CreateStaticQRCode = () => {
   const searchParams = useSearchParams();
   const url = searchParams.get("url");
+  const type =
+    (searchParams.get("type") as unknown as QrType) ?? QrType.REDIRECT;
+
   const pathName = usePathname();
   const locaton = window.location;
-  const [opts, setOpts] = useState<Partial<Options>>(defaultOpts);
+  const [opts, setOpts] = useState<{ title: string } & Partial<Options>>({
+    ...defaultOpts,
+    title: "example",
+  });
+
   const qrCodeRef = useRef<QRCodeStyling | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const debouncedLog = useDebouncedCallback((value: Partial<Options>) => {
+    // Simulate an API call or some other expensive operation
+    console.log("API call with:", value);
+    if (qrCodeRef.current) {
+      qrCodeRef.current.update(value);
+    }
+  }, 1000);
+  const debounceColour = useDebouncedCallback((value: Partial<Options>) => {
+    // Simulate an API call or some other expensive operation
+    console.log("API call with:", value);
+    if (qrCodeRef.current) {
+      qrCodeRef.current.update(value);
+    }
+  }, 200);
 
   useEffect(() => {
-    if (qrCodeRef) {
+    if (qrCodeRef.current) {
       const value = `${location.protocol}//${location.hostname}${
         locaton.port ? `:${locaton.port}` : ""
-      }${pathName}${url}`;
-      console.log("shouldUpdateURL");
+      }${pathName ?? ""}${url ?? ""}`;
       setOpts((p) => ({ ...p, data: value }));
-      qrCodeRef.current?.update({
+      qrCodeRef.current.update({
         data: value,
       });
     }
@@ -69,6 +70,17 @@ const CreateStaticQRCode = () => {
       qrCodeRef.current.download({
         name: `PowQR-${new Date().toJSON()}`,
         extension: "svg",
+      });
+    }
+  };
+
+  const handleSave = () => {
+    if (qrCodeRef.current) {
+      axios.post("/api/qr/save", {
+        teamId: 1,
+        title: opts.title,
+        type,
+        styling: qrCodeRef.current._options,
       });
     }
   };
@@ -92,6 +104,8 @@ const CreateStaticQRCode = () => {
         minHeight: "100%",
         padding: 1,
         backgroundColor: "#f4f4f0",
+        display: "flex",
+        flexGrow: 1,
       }}
     >
       <Grid2 container spacing={2} width="100%">
@@ -114,12 +128,52 @@ const CreateStaticQRCode = () => {
               gap: 2,
             }}
           >
-            <CustomiseQRForm
-              opts={opts}
-              setOpts={setOpts}
-              qrCodeRef={qrCodeRef}
-              defaultOpts={defaultOpts}
-            />
+            <Box
+              component="section"
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+              }}
+            >
+              <QrTypeButtonGroup type={type} />
+            </Box>
+            {type === QrType.REDIRECT && (
+              <section>
+                <TextField
+                  label="Title"
+                  fullWidth
+                  value={opts.data}
+                  onChange={(e) => {
+                    const { value } = e.target;
+                    setOpts((prev) => ({ ...prev, title: value }));
+                    debouncedLog({ data: value });
+                  }}
+                  size="small"
+                  sx={{ mb: 1 }}
+                />
+                <TextField
+                  label="URL"
+                  fullWidth
+                  value={opts.data}
+                  onChange={(e) => {
+                    const { value } = e.target;
+                    setOpts((prev) => ({ ...prev, data: value }));
+                    debouncedLog({ data: value });
+                  }}
+                  size="small"
+                  sx={{ mb: 1 }}
+                />
+                <CustomiseQRForm
+                  opts={opts}
+                  setOpts={setOpts}
+                  qrCodeRef={qrCodeRef}
+                  defaultOpts={defaultOpts}
+                  debouncedLog={debouncedLog}
+                  debounceColour={debounceColour}
+                />
+              </section>
+            )}
           </Card>
         </Grid2>
         <Grid2
@@ -142,13 +196,12 @@ const CreateStaticQRCode = () => {
               justifyContent: "center",
             }}
           >
-            {/* // todo: Add Double Buffering to avoid flicker on update */}
-            <div
-              ref={containerRef}
-              style={{ transition: "all 0.2s ease-in-out" }}
-            />
+            <div ref={containerRef} />
             <Button variant="contained" onClick={handleDownload} sx={{ mt: 2 }}>
               Download
+            </Button>
+            <Button variant="contained" onClick={handleSave} sx={{ mt: 2 }}>
+              Save
             </Button>
           </Card>
         </Grid2>

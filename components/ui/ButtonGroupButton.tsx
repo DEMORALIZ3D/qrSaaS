@@ -9,13 +9,19 @@ import React, { ElementType, ReactNode } from "react";
 const ButtonGroupButton = ({
   icon: Icon,
   title,
+  selected,
   ...props
 }: {
   icon: ElementType;
   title?: string;
+  selected?: boolean;
 } & ButtonProps) => {
   return (
-    <Button sx={{ display: "flex", flexDirection: "column" }} {...props}>
+    <Button
+      {...props}
+      sx={{ display: "flex", flexDirection: "column" }}
+      variant={selected ? "contained" : "outlined"}
+    >
       <Icon fontSize="small" />
       {title && (
         <Typography

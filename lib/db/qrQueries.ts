@@ -1,5 +1,5 @@
 import { db } from "./drizzle"; // Import your Drizzle database instance
-import { qrCodes, linkPage, QrCode, NewLinkPage, Link } from "./schema"; // Import your schema definitions
+import { qrCodes, linkPage, QrCode, NewLinkPage, Link, QrType } from "./schema"; // Import your schema definitions
 import { eq, and, isNull, desc } from "drizzle-orm";
 import { unstable_noStore as noStore } from "next/cache";
 
@@ -7,7 +7,7 @@ import { unstable_noStore as noStore } from "next/cache";
 
 // Create a new QR Code
 // Todo: Impliment below
-type NewQrCode = Omit<QrCode, "id" | "uuid" | "createdAt" | "updatedAt">;
+export type NewQrCode = Omit<QrCode, "id" | "uuid" | "createdAt" | "updatedAt">;
 
 export async function createQrCode(qrCodeData: NewQrCode): Promise<QrCode> {
   noStore();
@@ -97,6 +97,41 @@ export async function deleteQrCode(id: number): Promise<QrCode> {
 
 // --- Link Page CRUD ---
 
+// create QR first, then create link page with QR detail
+export async function createLinkPageWithQr(
+  teamId: number,
+  linkPageData: NewLinkPage
+): Promise<Link> {
+  try {
+    const qrResult = await db
+      .insert(qrCodes)
+      .values({
+        teamId: teamId,
+        friendlyName: linkPageData.pageName,
+        type: QrType.LINK_PAGE,
+        styling: null,
+        disabled: false,
+        deletedAt: null,
+      })
+      .returning();
+    if (qrResult.length === 0) {
+      throw new Error("Failed to create QR Code");
+    }
+    const qrId = qrResult[0].id;
+    const result = await db
+      .insert(linkPage)
+      .values({ ...linkPageData, qrId })
+      .returning();
+    if (result.length === 0) {
+      throw new Error("Failed to create Link Page");
+    }
+    return result[0];
+  } catch (error) {
+    console.error("Error creating link page:", error);
+    throw new Error("Database error: Failed to create link page");
+  }
+}
+
 // Create a new Link Page
 export async function createLinkPage(linkPageData: NewLinkPage): Promise<Link> {
   noStore();
@@ -113,14 +148,15 @@ export async function createLinkPage(linkPageData: NewLinkPage): Promise<Link> {
 }
 
 // Get all Link Pages by qrId
-export async function getLinkPagesByQrId(qrId: number): Promise<Link[]> {
+export async function getLinkPagesByQrId(qrId: number): Promise<Link> {
   noStore();
   try {
     const result = await db
       .select()
       .from(linkPage)
-      .where(and(eq(linkPage.qrId, qrId), isNull(linkPage.deletedAt)));
-    return result;
+      .where(and(eq(linkPage.qrId, qrId), isNull(linkPage.deletedAt)))
+      .limit(1);
+    return result[0];
   } catch (error) {
     console.error("Error fetching link pages by qrId:", error);
     throw new Error("Database error: Failed to fetch link pages");

@@ -62,6 +62,12 @@ function Header() {
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem className="cursor-pointer">
+                  <Link href="/qr/list" className="flex w-full items-center">
+                    <QrCode className="mr-2 h-4 w-4" />
+                    <span>My PowQR Codes</span>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer">
                   <Link href="/qr/create" className="flex w-full items-center">
                     <QrCode className="mr-2 h-4 w-4" />
                     <span>Create Static QR</span>

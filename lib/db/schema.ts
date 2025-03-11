@@ -10,6 +10,9 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { boolean, json, uniqueIndex } from "drizzle-orm/pg-core";
+import { GradientOptions } from "../utils";
+import { CoverAreaOptions, AvatarOptions, LinkThemeOptions } from "../linkPage";
+import QRCodeStyling from "qr-code-styling";
 
 export enum QrType {
   REDIRECT = "REDIRECT",
@@ -39,10 +42,11 @@ type ColorStyling = {
 };
 
 type Styling = {
-  primary: ColorStyling;
-  secondary?: ColorStyling;
-  tertiary: ColorStyling;
-  style: "rounded" | "round" | "square";
+  background: GradientOptions;
+  foreground?: GradientOptions;
+  coverArea?: CoverAreaOptions;
+  avatarArea?: AvatarOptions;
+  linksArea?: LinkThemeOptions;
 };
 
 export const qrCodes = pgTable("qr_codes", {
@@ -55,6 +59,7 @@ export const qrCodes = pgTable("qr_codes", {
   type: QrTypeEnum("type").notNull(),
   url: varchar("url", { length: 500 }),
   disabled: boolean("disabled"),
+  styling: json("styling").$type<QRCodeStyling["_options"]>(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
   deletedAt: timestamp("deleted_at"),
@@ -63,9 +68,7 @@ export const qrCodes = pgTable("qr_codes", {
 export const linkPage = pgTable("link_page", {
   id: serial("id").primaryKey(),
   uuid: uuid("uuid").defaultRandom(),
-  qrId: integer("qr_id")
-    .notNull()
-    .references(() => qrCodes.id),
+  qrId: integer("qr_id").references(() => qrCodes.id),
   pageName: varchar("page_name", { length: 100 }),
   links: json("links").$type<Links>().notNull().default([]),
   socialLinks: json("social_links").$type<string[]>(),
@@ -201,7 +204,7 @@ export type TeamDataWithMembers = Team & {
 };
 
 //In your insert schema, you'll have to make Links | null, same with styling
-export type NewLinkPage = {
+export type NewLinkPageState = {
   links: Links | null;
   socialLinks: Links | null;
   styling: Styling | null;

@@ -1,20 +1,21 @@
-import { getQrCodeById } from "@/lib/db/qrQueries";
+import { getLinkPagesByQrId, getQrCodeById } from "@/lib/db/qrQueries";
 import { getUser } from "@/lib/db/queries";
 import { redirect, RedirectType } from "next/navigation";
+import PageLinkViewer from "./PageLinkViewer";
 
 const Page = async ({
   params,
 }: {
-  params: Promise<{ teamId: string; qrUuid: string }>;
+  params: Promise<{ teamUuid: string; qrUuid: string }>;
 }) => {
-  const { qrUuid, teamId } = await params;
+  const { qrUuid, teamUuid: teamId } = await params;
 
-  // You *must* adapt getUser to work with context in getServerSideProps
-  const user = await getUser();
+  // // You *must* adapt getUser to work with context in getServerSideProps
+  // const user = await getUser();
 
-  if (!user) {
-    redirect("/sign-out");
-  }
+  // if (!user) {
+  //   redirect("/sign-out");
+  // }
 
   const qrCode = await getQrCodeById(qrUuid);
   if (!qrCode) {
@@ -22,15 +23,26 @@ const Page = async ({
       notFound: true, // Return a 404
     };
   }
-
+  console.log({ qrCode, qrUuid, teamId });
   //add in logic to prevent users viewing other team's qrs:
   if (Number(teamId) !== Number(qrCode.teamId)) {
     redirect("/dashboard");
   }
 
   if (qrCode.type === "REDIRECT") {
-    redirect(qrCode.url, RedirectType.replace);
+    if (qrCode.url) {
+      redirect(qrCode.url, RedirectType.replace);
+    } else {
+      redirect("/dashboard");
+    }
   }
+
+  if (qrCode.type === "LINK_PAGE") {
+    const pageLinkData = await getLinkPagesByQrId(qrCode.id);
+
+    return <PageLinkViewer pageLinkData={pageLinkData} />;
+  }
+
   return (
     <div>
       <ul>

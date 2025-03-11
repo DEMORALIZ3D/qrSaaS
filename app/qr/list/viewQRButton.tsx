@@ -10,12 +10,13 @@ const ViewQRButton = ({
 }: {
   type: string;
   teamId: number;
-  qrUuid: string;
+  qrUuid: string | null;
 }) => {
   const router = useRouter();
 
   return (
     <Button
+      disabled={!qrUuid}
       onClick={() => {
         router.push(`/qr/create?type=${type}&url=${`/${teamId}/${qrUuid}`}`);
       }}
