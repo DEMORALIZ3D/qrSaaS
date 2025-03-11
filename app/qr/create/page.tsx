@@ -1,10 +1,13 @@
+import { Suspense } from "react";
 import CreateStaticQRCode from "./static";
 
 const Page = () => {
   return (
-    <section style={{ height: "calc(100vh - 70px)" }}>
-      <CreateStaticQRCode />
-    </section>
+    <Suspense>
+      <section style={{ height: "calc(100vh - 70px)" }}>
+        <CreateStaticQRCode />
+      </section>
+    </Suspense>
   );
 };
 
