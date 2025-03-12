@@ -1,6 +1,6 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
-import { Manrope } from "next/font/google";
+import { Manrope, Bebas_Neue, Open_Sans } from "next/font/google";
 import { UserProvider } from "@/lib/auth";
 import { getUser } from "@/lib/db/queries";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
@@ -26,6 +26,8 @@ export const viewport: Viewport = {
 };
 
 const manrope = Manrope({ subsets: ["latin"] });
+const bebasNeue = Bebas_Neue({ weight: ["400"], subsets: ["latin"] });
+const openSans = Open_Sans({ subsets: ["latin"], weight: "400" });
 
 export default function RootLayout({
   children,
@@ -37,7 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`bg-white dark:bg-gray-950 text-black dark:text-white ${manrope.className}`}
+      className={`bg-white dark:bg-gray-950 text-black dark:text-white ${manrope.className} ${bebasNeue.className} ${openSans.className}`}
     >
       <body className="min-h-[100dvh] bg-gray-50">
         <AppRouterCacheProvider>
