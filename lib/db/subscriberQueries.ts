@@ -101,7 +101,7 @@ export async function deleteSubscriber(email: string): Promise<void> {
       .where(eq(subscribers.email, email));
 
     //Check if any rows where deleted
-    if (result.rowCount === 0) {
+    if (result.length === 0) {
       throw new Error(`Could not find user with email: ${email}`);
     }
   } catch (error: any) {

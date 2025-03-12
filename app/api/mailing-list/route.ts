@@ -5,8 +5,8 @@ import {
   getSubscriberByEmail,
   updateSubscriber,
   deleteSubscriber,
+  unsubscribe,
 } from "@/lib/db/subscriberQueries";
-import { unsubscribe } from "diagnostics_channel";
 
 export async function POST(request: NextRequest) {
   try {
