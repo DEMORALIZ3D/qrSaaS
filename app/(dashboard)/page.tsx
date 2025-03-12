@@ -4,6 +4,7 @@ import { Terminal } from "./terminal";
 import { Box, Grid2, Paper, Typography } from "@mui/material";
 import Image from "next/image";
 import { Construction } from "@mui/icons-material";
+import SubscribeToMailingList from "./SubscribeToMailingList";
 
 export default function HomePage() {
   return (
@@ -16,6 +17,9 @@ export default function HomePage() {
     >
       <Box
         sx={{
+          display: "flex",
+          flexDirection: "column",
+          flexGrow: 1,
           bgcolor: "primary.main",
           height: "100%",
           pt: 5,
@@ -30,6 +34,7 @@ export default function HomePage() {
               flexDirection: "column",
               alignItems: "center",
               justifyContent: "center",
+              gap: 2,
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>
@@ -46,6 +51,7 @@ export default function HomePage() {
               PowQR is getting ready to revolutionize the way you use QR codes.
               Get ready for a Pow!-erful experience.
             </Typography>
+            <SubscribeToMailingList />
           </Grid2>
           <Grid2
             size={{ xs: 12, md: 6 }}
@@ -56,12 +62,18 @@ export default function HomePage() {
               justifyContent: "center",
             }}
           >
-            <Image
-              src={`/powLandingImage.webp`}
-              alt="meh"
-              width="500"
-              height="500"
-            />
+            <Box
+              sx={{
+                position: "relative",
+              }}
+            >
+              <Image
+                src="/powLandingImage.webp"
+                alt="meh"
+                width="500"
+                height="500"
+              />
+            </Box>
           </Grid2>
         </Grid2>
       </Box>

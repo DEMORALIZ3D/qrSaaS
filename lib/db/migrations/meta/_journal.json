@@ -29,6 +29,20 @@
       "when": 1741643888828,
       "tag": "0003_thin_sabra",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1741816448862,
+      "tag": "0004_mushy_boomer",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1741817386618,
+      "tag": "0005_previous_the_stranger",
+      "breakpoints": true
     }
   ]
 }

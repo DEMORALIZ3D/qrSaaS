@@ -8,7 +8,7 @@ import {
   uuid,
   pgEnum,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { InferInsertModel, InferSelectModel, relations } from "drizzle-orm";
 import { boolean, json, uniqueIndex } from "drizzle-orm/pg-core";
 import { GradientOptions } from "../utils";
 import { CoverAreaOptions, AvatarOptions, LinkThemeOptions } from "../linkPage";
@@ -48,6 +48,28 @@ type Styling = {
   avatarArea?: AvatarOptions;
   linksArea?: LinkThemeOptions;
 };
+
+export const subscribers = pgTable(
+  "subscribers",
+  {
+    id: serial("id").primaryKey(), // Auto-incrementing primary key
+    uuid: uuid("uuid").defaultRandom(),
+    email: varchar("email", { length: 255 }).notNull(), // Email address (required)
+    firstName: varchar("first_name", { length: 255 }), // Optional first name
+    lastName: varchar("last_name", { length: 255 }), // Optional last name
+    subscribed: boolean("subscribed").default(true).notNull(), // Subscription status (default: subscribed)
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(), // Creation timestamp
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(), // Update timestamp
+  },
+  (subscribersTable) => ({
+    // Add a unique constraint on the email address.  This prevents duplicate subscribers.
+    emailUnique: uniqueIndex("email_unique_idx").on(subscribersTable.email),
+  })
+);
 
 export const qrCodes = pgTable("qr_codes", {
   id: serial("id").primaryKey(),
@@ -197,6 +219,9 @@ export type NewInvitation = typeof invitations.$inferInsert;
 export type QrCode = typeof qrCodes.$inferSelect;
 export type Link = typeof linkPage.$inferSelect;
 export type NewLinkPage = typeof linkPage.$inferInsert;
+export type Subscriber = InferSelectModel<typeof subscribers>;
+export type NewSubscriber = InferInsertModel<typeof subscribers>;
+
 export type TeamDataWithMembers = Team & {
   teamMembers: (TeamMember & {
     user: Pick<User, "id" | "name" | "email">;

@@ -24,6 +24,7 @@ import {
   QrCode2,
 } from "@mui/icons-material";
 import { QrCode } from "lucide-react";
+import LogoShort from "../svg/logoShort";
 
 const Header = forwardRef<HTMLElement, {}>((props, ref) => {
   const [authAnchorEl, setAuthAnchorEl] = useState<null | HTMLElement>(null);
@@ -60,7 +61,7 @@ const Header = forwardRef<HTMLElement, {}>((props, ref) => {
       >
         <Toolbar>
           <Link href={user ? "/dashboard" : "/"} className="flex items-center">
-            <LogoLong width="150px" height="40px" />
+            <LogoShort width="150px" height="40px" />
           </Link>
           <Box sx={{ display: "flex", flexGrow: 1, justifyContent: "end" }}>
             {user && (
@@ -183,9 +184,8 @@ const MainLayout = ({ children }: { children: React.ReactNode }) => {
     }
   }, [headerRef]);
 
-  console.log({ height });
   return (
-    <Box sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+    <Box sx={{ minHeight: "100lvh", display: "flex", flexDirection: "column" }}>
       <Header ref={headerRef} />
       <Box sx={{ height: `${height}px` }} />
       <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
