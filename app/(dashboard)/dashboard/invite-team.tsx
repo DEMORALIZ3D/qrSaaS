@@ -1,20 +1,29 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
+  Button,
+  TextField,
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
-  CardFooter
-} from '@/components/ui/card';
-import { Loader2, PlusCircle } from 'lucide-react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { use, useActionState } from 'react';
-import { inviteTeamMember } from '@/app/(login)/actions';
-import { useUser } from '@/lib/auth';
+  CardActions,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Typography,
+  CircularProgress,
+  IconButton,
+  Box,
+} from "@mui/material";
+import {
+  PersonAdd as PlusCircle,
+  Autorenew as Loader2,
+} from "@mui/icons-material"; // Corrected import
+import { use, useActionState } from "react";
+import { inviteTeamMember } from "@/app/(login)/actions";
+import { useUser } from "@/lib/auth";
 
 type ActionState = {
   error?: string;
@@ -24,79 +33,82 @@ type ActionState = {
 export function InviteTeamMember() {
   const { userPromise } = useUser();
   const user = use(userPromise);
-  const isOwner = user?.role === 'owner';
+  const isOwner = user?.role === "owner";
   const [inviteState, inviteAction, isInvitePending] = useActionState<
     ActionState,
     FormData
-  >(inviteTeamMember, { error: '', success: '' });
+  >(inviteTeamMember, { error: "", success: "" });
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Invite Team Member</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form action={inviteAction} className="space-y-4">
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
+      <CardHeader title="Invite Team Member" />
+      <CardContent sx={{ pt: 0 }}>
+        <form action={inviteAction}>
+          <FormControl fullWidth margin="normal">
+            <TextField
               id="email"
               name="email"
               type="email"
+              label="Email"
               placeholder="Enter email"
               required
               disabled={!isOwner}
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                  sx: {
+                    color: "primary.main",
+                  },
+                },
+              }}
             />
-          </div>
-          <div>
-            <Label>Role</Label>
-            <RadioGroup
-              defaultValue="member"
-              name="role"
-              className="flex space-x-4"
-              disabled={!isOwner}
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="member" id="member" />
-                <Label htmlFor="member">Member</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="owner" id="owner" />
-                <Label htmlFor="owner">Owner</Label>
-              </div>
+          </FormControl>
+          <FormControl component="fieldset" margin="normal">
+            <FormLabel component="legend">Role</FormLabel>
+            <RadioGroup defaultValue="member" name="role" row>
+              <FormControlLabel
+                value="member"
+                control={<Radio />}
+                label="Member"
+                disabled={!isOwner}
+              />
+              <FormControlLabel
+                value="owner"
+                control={<Radio />}
+                label="Owner"
+                disabled={!isOwner}
+              />
             </RadioGroup>
-          </div>
+          </FormControl>
           {inviteState?.error && (
-            <p className="text-red-500">{inviteState.error}</p>
+            <Typography color="error">{inviteState.error}</Typography>
           )}
           {inviteState?.success && (
-            <p className="text-green-500">{inviteState.success}</p>
+            <Typography color="success.main">{inviteState.success}</Typography> // Use success.main for a standard green
           )}
           <Button
             type="submit"
-            className="bg-orange-500 hover:bg-orange-600 text-white"
+            variant="contained"
             disabled={isInvitePending || !isOwner}
+            startIcon={isInvitePending ? null : <PlusCircle />}
           >
             {isInvitePending ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <CircularProgress size={20} sx={{ mr: 1 }} />
                 Inviting...
               </>
             ) : (
-              <>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Invite Member
-              </>
+              "Invite Member"
             )}
           </Button>
         </form>
       </CardContent>
       {!isOwner && (
-        <CardFooter>
-          <p className="text-sm text-muted-foreground">
+        <CardActions>
+          <Typography variant="body2" color="textSecondary">
             You must be a team owner to invite new members.
-          </p>
-        </CardFooter>
+          </Typography>
+        </CardActions>
       )}
     </Card>
   );

@@ -1,13 +1,31 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { customerPortalAction } from '@/lib/payments/actions';
-import { useActionState } from 'react';
-import { TeamDataWithMembers, User } from '@/lib/db/schema';
-import { removeTeamMember } from '@/app/(login)/actions';
-import { InviteTeamMember } from './invite-team';
+import {
+  Button,
+  Avatar,
+  Card,
+  CardContent,
+  CardHeader,
+  Typography,
+  Box,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  CircularProgress,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  IconButton,
+} from "@mui/material";
+import { customerPortalAction } from "@/lib/payments/actions";
+import { useActionState } from "react";
+import { TeamDataWithMembers, User } from "@/lib/db/schema";
+import { removeTeamMember } from "@/app/(login)/actions";
+import { InviteTeamMember } from "./invite-team"; // Assuming this is also converted to MUI
+import { Delete, PersonOutline } from "@mui/icons-material";
 
 type ActionState = {
   error?: string;
@@ -18,95 +36,133 @@ export function Settings({ teamData }: { teamData: TeamDataWithMembers }) {
   const [removeState, removeAction, isRemovePending] = useActionState<
     ActionState,
     FormData
-  >(removeTeamMember, { error: '', success: '' });
+  >(removeTeamMember, { error: "", success: "" });
 
-  const getUserDisplayName = (user: Pick<User, 'id' | 'name' | 'email'>) => {
-    return user.name || user.email || 'Unknown User';
+  const getUserDisplayName = (user: Pick<User, "id" | "name" | "email">) => {
+    return user.name || user.email || "Unknown User";
   };
 
   return (
-    <section className="flex-1 p-4 lg:p-8">
-      <h1 className="text-lg lg:text-2xl font-medium mb-6">Team Settings</h1>
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Team Subscription</CardTitle>
-        </CardHeader>
+    <Box sx={{ flex: 1, p: { xs: 2, lg: 4 } }}>
+      <Typography
+        variant="h5"
+        component="h1"
+        color="textSecondary"
+        gutterBottom
+      >
+        Team Settings
+      </Typography>
+
+      <Card sx={{ mb: 4 }}>
+        <CardHeader title="Team Subscription" />
         <CardContent>
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center">
-              <div className="mb-4 sm:mb-0">
-                <p className="font-medium">
-                  Current Plan: {teamData.planName || 'Free'}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {teamData.subscriptionStatus === 'active'
-                    ? 'Billed monthly'
-                    : teamData.subscriptionStatus === 'trialing'
-                      ? 'Trial period'
-                      : 'No active subscription'}
-                </p>
-              </div>
-              <form action={customerPortalAction}>
-                <Button type="submit" variant="outline">
-                  Manage Subscription
-                </Button>
-              </form>
-            </div>
-          </div>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              justifyContent: "space-between",
+              alignItems: { xs: "flex-start", sm: "center" },
+            }}
+          >
+            <Box sx={{ mb: { xs: 2, sm: 0 } }}>
+              <Typography variant="subtitle1" fontWeight="medium">
+                Current Plan: {teamData.planName || "Free"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {teamData.subscriptionStatus === "active"
+                  ? "Billed monthly"
+                  : teamData.subscriptionStatus === "trialing"
+                  ? "Trial period"
+                  : "No active subscription"}
+              </Typography>
+            </Box>
+            <form action={customerPortalAction}>
+              <Button type="submit" variant="outlined">
+                Manage Subscription
+              </Button>
+            </form>
+          </Box>
         </CardContent>
       </Card>
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Team Members</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ul className="space-y-4">
-            {teamData.teamMembers.map((member, index) => (
-              <li key={member.id} className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <Avatar>
-                    <AvatarImage
-                      src={`/placeholder.svg?height=32&width=32`}
-                      alt={getUserDisplayName(member.user)}
-                    />
-                    <AvatarFallback>
-                      {getUserDisplayName(member.user)
-                        .split(' ')
-                        .map((n) => n[0])
-                        .join('')}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">
-                      {getUserDisplayName(member.user)}
-                    </p>
-                    <p className="text-sm text-muted-foreground capitalize">
-                      {member.role}
-                    </p>
-                  </div>
-                </div>
-                {index > 1 ? (
-                  <form action={removeAction}>
-                    <input type="hidden" name="memberId" value={member.id} />
-                    <Button
-                      type="submit"
-                      variant="outline"
-                      size="sm"
-                      disabled={isRemovePending}
+
+      <Card sx={{ mb: 4 }}>
+        <CardHeader title="Team Members" />
+        <CardContent sx={{ pt: 0 }}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell />
+                <TableCell>Details</TableCell>
+                <TableCell>Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {teamData.teamMembers.map((member, index) => (
+                <TableRow key={member.id}>
+                  <TableCell>
+                    <Avatar>
+                      {member.user.imageUrl ? (
+                        <img
+                          src={member.user.imageUrl}
+                          alt={getUserDisplayName(member.user)}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                      ) : (
+                        <PersonOutline />
+                      )}
+                    </Avatar>
+                  </TableCell>
+                  <TableCell>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "center",
+                      }}
                     >
-                      {isRemovePending ? 'Removing...' : 'Remove'}
-                    </Button>
-                  </form>
-                ) : null}
-              </li>
-            ))}
-          </ul>
+                      <Typography variant="subtitle1" fontWeight="medium">
+                        {getUserDisplayName(member.user)}
+                      </Typography>
+                      <Typography
+                        variant="body2"
+                        color="secondary.main"
+                        sx={{ textTransform: "capitalize" }}
+                      >
+                        {member.role}
+                      </Typography>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    <form action={removeAction}>
+                      <input type="hidden" name="memberId" value={member.id} />
+                      <IconButton
+                        size="small"
+                        disabled={index < 1 || isRemovePending}
+                      >
+                        {isRemovePending ? (
+                          <CircularProgress size={16} sx={{ mr: 1 }} />
+                        ) : (
+                          <Delete />
+                        )}
+                      </IconButton>
+                    </form>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
           {removeState?.error && (
-            <p className="text-red-500 mt-4">{removeState.error}</p>
+            <Typography variant="body2" color="error" mt={2}>
+              {removeState.error}
+            </Typography>
           )}
         </CardContent>
       </Card>
       <InviteTeamMember />
-    </section>
+    </Box>
   );
 }

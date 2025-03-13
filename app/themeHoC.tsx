@@ -1,7 +1,6 @@
 "use client";
 import CssBaseline from "@mui/material/CssBaseline";
-// import { ThemeProvider } from "@mui/material/styles";
-import { createTheme, ThemeProvider } from "@mui/material";
+import { createTheme, GlobalStyles, ThemeProvider } from "@mui/material";
 
 const theme = createTheme({
   palette: {
@@ -22,12 +21,13 @@ const theme = createTheme({
       paper: "#FFFFFF", // Paper color (for cards, etc.)
     },
     text: {
-      primary: "#212121", //Use primary.main for text
+      primary: "#000",
+      secondary: "#fff",
+      disabled: "rgba(255, 255, 255, 0.38)",
     },
   },
   typography: {
     fontFamily: [
-      //Font stack
       "Bebas Neue", // Primary headline font
       "Open Sans", // Primary body font
       "Roboto", // Fallback to MUI default
@@ -41,7 +41,8 @@ const theme = createTheme({
       fontSize: "3.5rem", // Adjust as needed
       lineHeight: 1.2,
       letterSpacing: "0.05em",
-      textTransform: "uppercase", // Make H1 uppercase
+      textTransform: "uppercase",
+      color: "#fff", // Make H1 uppercase
     },
     h2: {
       fontFamily: "Bebas Neue",
@@ -180,6 +181,13 @@ const theme = createTheme({
 
 export const ThemeWrapper = ({ children }: { children: React.ReactNode }) => (
   <ThemeProvider theme={theme}>
+    <GlobalStyles
+      styles={{
+        html: {
+          color: "#000",
+        },
+      }}
+    />
     <CssBaseline />
     {children}
   </ThemeProvider>

@@ -4,7 +4,7 @@ import { Breakpoint } from "@mui/material/styles";
 
 type DeviceType = "mobile" | "tablet" | "desktop";
 
-const useWhatDeviceType = (): DeviceType => {
+const useWhatDeviceType = (): DeviceType | null => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
   const isTablet = useMediaQuery(theme.breakpoints.between("sm", "lg")); // Check between sm and lg
@@ -16,7 +16,10 @@ const useWhatDeviceType = (): DeviceType => {
   if (isTablet) {
     return "tablet";
   }
-  return "mobile"; // Default to mobile
+  if (isMobile) {
+    return "mobile";
+  }
+  return null; // Default to mobile
 };
 
 export default useWhatDeviceType;

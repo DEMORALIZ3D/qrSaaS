@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import {
   LocalActivity as Activity,
   Menu,
@@ -12,7 +11,14 @@ import {
   VerifiedUser as Users,
   Close,
 } from "@mui/icons-material";
-import { AppBar, Box, Drawer, IconButton, Typography } from "@mui/material";
+import {
+  AppBar,
+  Box,
+  Drawer,
+  IconButton,
+  Typography,
+  Button,
+} from "@mui/material";
 import { useHeaderState } from "@/store/useHeaderState";
 import useWhatDeviceType from "@/hooks/useWhatScreenSize";
 
@@ -22,7 +28,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { headerHeight } = useHeaderState();
   const deviceType = useWhatDeviceType();
 
@@ -66,23 +72,29 @@ export default function DashboardLayout({
             onClose={() => setIsSidebarOpen(false)}
             sx={{
               width: "80vw",
+              maxWidth: 500,
+
               "& .MuiDrawer-paper": {
                 width: "80vw",
+                maxWidth: 500,
                 boxSizing: "border-box",
+                p: 2,
+                pt: 3,
               },
             }}
           >
             {navItems.map((item) => (
               <Link key={item.href} href={item.href} passHref>
                 <Button
-                  variant={pathname === item.href ? "secondary" : "ghost"}
-                  style={{
+                  variant={pathname === item.href ? "contained" : "outlined"}
+                  sx={{
                     boxShadow: "none",
-                    margin: "0.25rem 0",
                     width: "100%",
                     justifyContent: "flex-start",
-                    backgroundColor:
-                      pathname === item.href ? "lightgray" : undefined,
+                    "&:hover": {
+                      bgcolor: "secondary.dark",
+                      color: "black",
+                    },
                   }}
                   onClick={() => setIsSidebarOpen(false)}
                 >
@@ -106,40 +118,57 @@ export default function DashboardLayout({
             width: 300,
             bgcolor: "background.paper",
             borderRight: "1px solid gray",
-            p: 2,
-            pt: 3,
-            flexShrink: 0,
+            position: "relative",
+
             "& .MuiDrawer-paper": {
               width: 300,
               boxSizing: "border-box",
             },
           }}
         >
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href} passHref>
-              <Button
-                variant={pathname === item.href ? "secondary" : "ghost"}
-                style={{
-                  boxShadow: "none",
-                  margin: "0.25rem 0",
-                  width: "100%",
-                  justifyContent: "flex-start",
-                  backgroundColor:
-                    pathname === item.href ? "lightgray" : undefined,
-                }}
-                onClick={() => setIsSidebarOpen(false)}
-              >
-                <item.icon
-                  style={{
-                    marginRight: "0.5rem",
-                    height: "1rem",
-                    width: "1rem",
+          <Box
+            sx={{
+              position: "fixed",
+              top: headerHeight,
+              p: 2,
+              pt: 3,
+              display: "flex",
+              flexDirection: "column",
+              gap: 1,
+              maxWidth: "300px",
+              width: "100%",
+            }}
+          >
+            {navItems.map((item) => (
+              <Link key={item.href} href={item.href} passHref>
+                <Button
+                  variant={pathname === item.href ? "contained" : "text"}
+                  sx={{
+                    boxShadow: "none",
+                    width: "100%",
+                    justifyContent: "flex-start",
+                    color:
+                      pathname === item.href ? "common.white" : "primary.main",
+                    "&:hover": {
+                      ...(pathname !== item.href
+                        ? { bgcolor: "secondary.dark", color: "common.white" }
+                        : {}),
+                    },
                   }}
-                />
-                {item.label}
-              </Button>
-            </Link>
-          ))}
+                  onClick={() => setIsSidebarOpen(false)}
+                >
+                  <item.icon
+                    style={{
+                      marginRight: "0.5rem",
+                      height: "1rem",
+                      width: "1rem",
+                    }}
+                  />
+                  {item.label}
+                </Button>
+              </Link>
+            ))}
+          </Box>
         </Box>
       )}
 
