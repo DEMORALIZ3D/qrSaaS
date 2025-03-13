@@ -35,6 +35,7 @@ export default function HomePage() {
               alignItems: "center",
               justifyContent: "center",
               gap: 2,
+              px: { lg: 6, md: 0 },
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 4 }}>

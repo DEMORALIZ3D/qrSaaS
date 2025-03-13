@@ -25,6 +25,7 @@ import {
 } from "@mui/icons-material";
 import { QrCode } from "lucide-react";
 import LogoShort from "../svg/logoShort";
+import { useHeaderState } from "@/store/useHeaderState";
 
 const Header = forwardRef<HTMLElement, {}>((props, ref) => {
   const [authAnchorEl, setAuthAnchorEl] = useState<null | HTMLElement>(null);
@@ -175,20 +176,36 @@ const Header = forwardRef<HTMLElement, {}>((props, ref) => {
 
 const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const headerRef = React.useRef<HTMLElement>(null);
-  const [height, setHeight] = useState<number>(56);
+  const { headerHeight, setHeaderHeight } = useHeaderState();
 
   useEffect(() => {
-    console.log({ headrRef: headerRef.current?.clientHeight });
     if (headerRef.current?.clientHeight) {
-      setHeight(headerRef.current?.clientHeight);
+      setHeaderHeight(headerRef.current?.clientHeight);
     }
   }, [headerRef]);
 
   return (
-    <Box sx={{ minHeight: "100lvh", display: "flex", flexDirection: "column" }}>
+    <Box
+      sx={{
+        minHeight: "100lvh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        bgcolor: "primary.main",
+      }}
+    >
       <Header ref={headerRef} />
-      <Box sx={{ height: `${height}px` }} />
-      <Box sx={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
+      <Box sx={{ height: `${headerHeight}px` }} />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+
+          flexGrow: 1,
+          maxWidth: "1900px",
+          width: "100%",
+        }}
+      >
         {children}
       </Box>
     </Box>

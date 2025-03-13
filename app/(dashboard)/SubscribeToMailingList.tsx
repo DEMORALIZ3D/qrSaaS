@@ -70,7 +70,7 @@ const SubscribeToMailingList = () => {
           bgcolor: "primary.dark",
         }}
       >
-        Subscribe To Mailing List
+        Get notified when we are live
       </Button>
       <Dialog open={open} onClose={toggleModal} fullWidth maxWidth="md">
         <DialogTitle>Subscribe To Mailing List</DialogTitle>
@@ -93,7 +93,10 @@ const SubscribeToMailingList = () => {
                   fullWidth
                 />
                 <Typography variant="body2">
-                  Let us personalise our emails for you.
+                  Let us personalise our emails for the best experience.
+                  <sup>
+                    <i>Optional</i>
+                  </sup>
                 </Typography>
                 <TextField
                   id="first_name"
@@ -110,7 +113,12 @@ const SubscribeToMailingList = () => {
               </Box>
             </DialogContent>
             <DialogActions
-              sx={{ display: "flex", justifyContent: "space-between" }}
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                px: 3,
+                pb: 3,
+              }}
             >
               <Button onClick={toggleModal} color="error">
                 Cancel

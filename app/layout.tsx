@@ -39,7 +39,8 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`bg-white dark:bg-gray-950 text-black dark:text-white ${manrope.className} ${bebasNeue.className} ${openSans.className}`}
+      className={`${manrope.className} ${bebasNeue.className} ${openSans.className}`}
+      style={{ backgroundColor: "#212121" }}
     >
       <body className="min-h-[100dvh] bg-gray-50">
         <AppRouterCacheProvider>

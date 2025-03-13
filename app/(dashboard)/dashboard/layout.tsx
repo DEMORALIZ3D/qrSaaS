@@ -1,10 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Users, Settings, Shield, Activity, Menu } from 'lucide-react';
+import { useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  LocalActivity as Activity,
+  Menu,
+  Shield,
+  Settings,
+  VerifiedUser as Users,
+  Close,
+} from "@mui/icons-material";
+import { AppBar, Box, Drawer, IconButton, Typography } from "@mui/material";
+import { useHeaderState } from "@/store/useHeaderState";
+import useWhatDeviceType from "@/hooks/useWhatScreenSize";
 
 export default function DashboardLayout({
   children,
@@ -12,62 +22,131 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { headerHeight } = useHeaderState();
+  const deviceType = useWhatDeviceType();
 
   const navItems = [
-    { href: '/dashboard', icon: Users, label: 'Team' },
-    { href: '/dashboard/general', icon: Settings, label: 'General' },
-    { href: '/dashboard/activity', icon: Activity, label: 'Activity' },
-    { href: '/dashboard/security', icon: Shield, label: 'Security' },
+    { href: "/dashboard", icon: Users, label: "Team" },
+    { href: "/dashboard/general", icon: Settings, label: "General" },
+    { href: "/dashboard/activity", icon: Activity, label: "Activity" },
+    { href: "/dashboard/security", icon: Shield, label: "Security" },
   ];
 
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-68px)] max-w-7xl mx-auto w-full">
-      {/* Mobile header */}
-      <div className="lg:hidden flex items-center justify-between bg-white border-b border-gray-200 p-4">
-        <div className="flex items-center">
-          <span className="font-medium">Settings</span>
-        </div>
-        <Button
-          className="-mr-3"
-          variant="ghost"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+    <div
+      style={{ display: "flex", flex: 1, overflow: "hidden", height: "100%" }}
+    >
+      {deviceType === "mobile" ? (
+        <AppBar
+          variant="elevation"
+          position="fixed"
+          color="secondary"
+          sx={{
+            top: headerHeight,
+            px: 2,
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
         >
-          <Menu className="h-6 w-6" />
-          <span className="sr-only">Toggle sidebar</span>
-        </Button>
-      </div>
-
-      <div className="flex flex-1 overflow-hidden h-full">
-        {/* Sidebar */}
-        <aside
-          className={`w-64 bg-white lg:bg-gray-50 border-r border-gray-200 lg:block ${
-            isSidebarOpen ? 'block' : 'hidden'
-          } lg:relative absolute inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
-        >
-          <nav className="h-full overflow-y-auto p-4">
+          <Typography>Settings</Typography>
+          <Box>
+            <IconButton>
+              {isSidebarOpen ? (
+                <Close onClick={() => setIsSidebarOpen(false)} />
+              ) : (
+                <Menu onClick={() => setIsSidebarOpen(true)} />
+              )}
+            </IconButton>
+          </Box>
+          <Drawer
+            anchor="left"
+            open={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
+            sx={{
+              width: "80vw",
+              "& .MuiDrawer-paper": {
+                width: "80vw",
+                boxSizing: "border-box",
+              },
+            }}
+          >
             {navItems.map((item) => (
               <Link key={item.href} href={item.href} passHref>
                 <Button
-                  variant={pathname === item.href ? 'secondary' : 'ghost'}
-                  className={`shadow-none my-1 w-full justify-start ${
-                    pathname === item.href ? 'bg-gray-100' : ''
-                  }`}
+                  variant={pathname === item.href ? "secondary" : "ghost"}
+                  style={{
+                    boxShadow: "none",
+                    margin: "0.25rem 0",
+                    width: "100%",
+                    justifyContent: "flex-start",
+                    backgroundColor:
+                      pathname === item.href ? "lightgray" : undefined,
+                  }}
                   onClick={() => setIsSidebarOpen(false)}
                 >
-                  <item.icon className="mr-2 h-4 w-4" />
+                  <item.icon
+                    style={{
+                      marginRight: "0.5rem",
+                      height: "1rem",
+                      width: "1rem",
+                    }}
+                  />
                   {item.label}
                 </Button>
               </Link>
             ))}
-          </nav>
-        </aside>
+          </Drawer>
+        </AppBar>
+      ) : (
+        <Box
+          component="nav"
+          sx={{
+            width: 300,
+            bgcolor: "background.paper",
+            borderRight: "1px solid gray",
+            p: 2,
+            pt: 3,
+            flexShrink: 0,
+            "& .MuiDrawer-paper": {
+              width: 300,
+              boxSizing: "border-box",
+            },
+          }}
+        >
+          {navItems.map((item) => (
+            <Link key={item.href} href={item.href} passHref>
+              <Button
+                variant={pathname === item.href ? "secondary" : "ghost"}
+                style={{
+                  boxShadow: "none",
+                  margin: "0.25rem 0",
+                  width: "100%",
+                  justifyContent: "flex-start",
+                  backgroundColor:
+                    pathname === item.href ? "lightgray" : undefined,
+                }}
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <item.icon
+                  style={{
+                    marginRight: "0.5rem",
+                    height: "1rem",
+                    width: "1rem",
+                  }}
+                />
+                {item.label}
+              </Button>
+            </Link>
+          ))}
+        </Box>
+      )}
 
-        {/* Main content */}
-        <main className="flex-1 overflow-y-auto p-0 lg:p-4">{children}</main>
-      </div>
+      {/* Main content */}
+      <main style={{ flex: 1, overflowY: "auto", padding: "0 1rem" }}>
+        {children}
+      </main>
     </div>
   );
 }
