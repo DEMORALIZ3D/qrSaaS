@@ -101,19 +101,7 @@ export function Settings({ teamData }: { teamData: TeamDataWithMembers }) {
                 <TableRow key={member.id}>
                   <TableCell>
                     <Avatar>
-                      {member.user.imageUrl ? (
-                        <img
-                          src={member.user.imageUrl}
-                          alt={getUserDisplayName(member.user)}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                          }}
-                        />
-                      ) : (
-                        <PersonOutline />
-                      )}
+                      <PersonOutline />
                     </Avatar>
                   </TableCell>
                   <TableCell>
