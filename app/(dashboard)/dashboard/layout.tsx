@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -29,8 +29,9 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const { headerHeight } = useHeaderState();
+  const { headerHeight, setHeaderHeight } = useHeaderState(); // Get the setter function
   const deviceType = useWhatDeviceType();
+  const headerRef = useRef<HTMLDivElement>(null);
 
   const navItems = [
     { href: "/dashboard", icon: Users, label: "Team" },
@@ -39,143 +40,112 @@ export default function DashboardLayout({
     { href: "/dashboard/security", icon: Shield, label: "Security" },
   ];
 
-  return (
-    <div
-      style={{ display: "flex", flex: 1, overflow: "hidden", height: "100%" }}
-    >
-      {deviceType === "mobile" ? (
-        <AppBar
-          variant="elevation"
-          position="fixed"
-          color="secondary"
-          sx={{
-            top: headerHeight,
-            px: 2,
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <Typography>Settings</Typography>
-          <Box>
-            <IconButton>
-              {isSidebarOpen ? (
-                <Close onClick={() => setIsSidebarOpen(false)} />
-              ) : (
-                <Menu onClick={() => setIsSidebarOpen(true)} />
-              )}
-            </IconButton>
-          </Box>
-          <Drawer
-            anchor="left"
-            open={isSidebarOpen}
-            onClose={() => setIsSidebarOpen(false)}
-            sx={{
-              width: "80vw",
-              maxWidth: 500,
+  useEffect(() => {
+    if (headerRef.current) {
+      setHeaderHeight(headerRef.current.offsetHeight);
+    }
+  }, []); // Measure header height on mount
 
-              "& .MuiDrawer-paper": {
-                width: "80vw",
-                maxWidth: 500,
-                boxSizing: "border-box",
-                p: 2,
-                pt: 3,
+  const sidebar = (
+    <Drawer
+      anchor="left"
+      variant="temporary"
+      open={isSidebarOpen}
+      onClose={() => setIsSidebarOpen(false)}
+      sx={{
+        width: { xs: "80vw", md: 300 },
+        maxWidth: 500,
+        "& .MuiDrawer-paper": {
+          width: { xs: "80vw", md: 300 },
+          maxWidth: 500,
+          boxSizing: "border-box",
+          p: 2,
+          pt: (theme) =>
+            `calc(${headerHeight}px + ${theme.spacing(3)} + ${
+              headerRef.current ? headerRef.current.offsetHeight : 0
+            }px)`,
+          display: "flex",
+          flexDirection: "column",
+          gap: 1,
+        },
+      }}
+    >
+      {navItems.map((item) => (
+        <Link key={item.href} href={item.href} passHref>
+          <Button
+            variant={pathname === item.href ? "contained" : "text"}
+            sx={{
+              boxShadow: "none",
+              width: "100%",
+              justifyContent: "flex-start",
+              color: pathname === item.href ? "common.white" : "primary.main",
+              "&:hover": {
+                ...(pathname !== item.href
+                  ? { bgcolor: "secondary.dark", color: "common.white" }
+                  : {}),
               },
             }}
+            onClick={() => setIsSidebarOpen(false)}
           >
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href} passHref>
-                <Button
-                  variant={pathname === item.href ? "contained" : "outlined"}
-                  sx={{
-                    boxShadow: "none",
-                    width: "100%",
-                    justifyContent: "flex-start",
-                    "&:hover": {
-                      bgcolor: "secondary.dark",
-                      color: "black",
-                    },
-                  }}
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  <item.icon
-                    style={{
-                      marginRight: "0.5rem",
-                      height: "1rem",
-                      width: "1rem",
-                    }}
-                  />
-                  {item.label}
-                </Button>
-              </Link>
-            ))}
-          </Drawer>
-        </AppBar>
-      ) : (
-        <Box
-          component="nav"
-          sx={{
-            width: 300,
-            bgcolor: "background.paper",
-            borderRight: "1px solid gray",
-            position: "relative",
+            <item.icon
+              style={{
+                marginRight: "0.5rem",
+                height: "1rem",
+                width: "1rem",
+              }}
+            />
+            {item.label}
+          </Button>
+        </Link>
+      ))}
+    </Drawer>
+  );
 
-            "& .MuiDrawer-paper": {
-              width: 300,
-              boxSizing: "border-box",
-            },
-          }}
-        >
-          <Box
-            sx={{
-              position: "fixed",
-              top: headerHeight,
-              p: 2,
-              pt: 3,
-              display: "flex",
-              flexDirection: "column",
-              gap: 1,
-              maxWidth: "300px",
-              width: "100%",
-            }}
-          >
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href} passHref>
-                <Button
-                  variant={pathname === item.href ? "contained" : "text"}
-                  sx={{
-                    boxShadow: "none",
-                    width: "100%",
-                    justifyContent: "flex-start",
-                    color:
-                      pathname === item.href ? "common.white" : "primary.main",
-                    "&:hover": {
-                      ...(pathname !== item.href
-                        ? { bgcolor: "secondary.dark", color: "common.white" }
-                        : {}),
-                    },
-                  }}
-                  onClick={() => setIsSidebarOpen(false)}
-                >
-                  <item.icon
-                    style={{
-                      marginRight: "0.5rem",
-                      height: "1rem",
-                      width: "1rem",
-                    }}
-                  />
-                  {item.label}
-                </Button>
-              </Link>
-            ))}
-          </Box>
+  return (
+    <div
+      style={{
+        display: "flex",
+        flex: 1,
+        overflow: "hidden",
+        height: "100%",
+      }}
+    >
+      <AppBar
+        ref={headerRef} // Add ref to the AppBar
+        variant="elevation"
+        position="fixed"
+        color="secondary"
+        sx={{
+          top: `${headerHeight}px`, //AppBar always starts at top.  Offset is handled by the sidebar
+          px: 2,
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+          zIndex: (theme) => theme.zIndex.drawer + 1, //Ensure AppBar is above the Drawer
+        }}
+      >
+        <Typography>Settings</Typography>
+        <Box>
+          <IconButton>
+            {isSidebarOpen ? (
+              <Close onClick={() => setIsSidebarOpen(false)} />
+            ) : (
+              <Menu onClick={() => setIsSidebarOpen(true)} />
+            )}
+          </IconButton>
         </Box>
-      )}
-
+      </AppBar>
+      {sidebar}
       {/* Main content */}
-      <main style={{ flex: 1, overflowY: "auto", padding: "0 1rem" }}>
+      <Box
+        component="main"
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+        }}
+      >
         {children}
-      </main>
+      </Box>
     </div>
   );
 }

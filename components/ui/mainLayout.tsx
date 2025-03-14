@@ -5,7 +5,6 @@ import React, { forwardRef, use, useEffect, useMemo, useState } from "react";
 import { useUser } from "@/lib/auth";
 import { signOut } from "@/app/(login)/actions";
 import { useRouter } from "next/navigation";
-import LogoLong from "@/components/svg/logoLong";
 import {
   AppBar,
   Box,
@@ -58,7 +57,11 @@ const Header = forwardRef<HTMLElement, {}>((props, ref) => {
       <AppBar
         ref={ref}
         position="fixed"
-        sx={{ bgcolor: "primary.dark", top: 0 }}
+        sx={{
+          bgcolor: "primary.dark",
+          top: 0,
+          zIndex: (theme) => theme.zIndex.drawer + 1, //Ensure AppBar is above the Drawer
+        }}
       >
         <Toolbar>
           <Link href={user ? "/dashboard" : "/"} className="flex items-center">
