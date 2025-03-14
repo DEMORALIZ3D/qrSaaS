@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { startTransition, use, useActionState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Loader2 } from 'lucide-react';
-import { useUser } from '@/lib/auth';
-import { updateAccount } from '@/app/(login)/actions';
+import { startTransition, use, useActionState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Loader2 } from "lucide-react"; // This line is removed because there are no Lucide icons in this component
+import { useUser } from "@/lib/auth";
+import { updateAccount } from "@/app/(login)/actions";
+import { Box, Card, CardContent, CardHeader, Typography } from "@mui/material";
 
 type ActionState = {
   error?: string;
@@ -19,79 +19,54 @@ export default function GeneralPage() {
   const user = use(userPromise);
   const [state, formAction, isPending] = useActionState<ActionState, FormData>(
     updateAccount,
-    { error: '', success: '' }
+    { error: "", success: "" }
   );
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // If you call the Server Action directly, it will automatically
-    // reset the form. We don't want that here, because we want to keep the
-    // client-side values in the inputs. So instead, we use an event handler
-    // which calls the action. You must wrap direct calls with startTransition.
-    // When you use the `action` prop it automatically handles that for you.
-    // Another option here is to persist the values to local storage. I might
-    // explore alternative options.
     startTransition(() => {
       formAction(new FormData(event.currentTarget));
     });
   };
 
   return (
-    <section className="flex-1 p-4 lg:p-8">
-      <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
+    <Box component="section" px={3}>
+      <Typography variant="h1" mb={3}>
         General Settings
-      </h1>
-
+      </Typography>
       <Card>
-        <CardHeader>
-          <CardTitle>Account Information</CardTitle>
-        </CardHeader>
+        <CardHeader title="Account Information" />
         <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
+          <form onSubmit={handleSubmit}>
+            <div style={{ marginBottom: "0.5rem" }}>
               <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
                 name="name"
                 placeholder="Enter your name"
-                defaultValue={user?.name || ''}
+                defaultValue={user?.name || ""}
                 required
               />
             </div>
-            <div>
+            <div style={{ marginBottom: "0.5rem" }}>
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
                 placeholder="Enter your email"
-                defaultValue={user?.email || ''}
+                defaultValue={user?.email || ""}
                 required
               />
             </div>
-            {state.error && (
-              <p className="text-red-500 text-sm">{state.error}</p>
-            )}
-            {state.success && (
-              <p className="text-green-500 text-sm">{state.success}</p>
-            )}
-            <Button
-              type="submit"
-              className="bg-orange-500 hover:bg-orange-600 text-white"
-              disabled={isPending}
-            >
-              {isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                'Save Changes'
-              )}
+            {state.error && <p style={{ color: "red" }}>{state.error}</p>}
+            {state.success && <p style={{ color: "green" }}>{state.success}</p>}
+            <Button type="submit" disabled={isPending}>
+              {isPending ? "Saving..." : "Save Changes"}
             </Button>
           </form>
         </CardContent>
       </Card>
-    </section>
+    </Box>
   );
 }

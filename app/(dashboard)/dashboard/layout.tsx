@@ -142,6 +142,11 @@ export default function DashboardLayout({
         sx={{
           flex: 1,
           overflowY: "auto",
+          // marginTop: (theme) =>
+          //   `calc(${headerHeight}px  + ${
+          //     headerRef.current ? headerRef.current.offsetHeight : 0
+          //   }px)`,
+          marginTop: (theme) => `${headerHeight}px`,
         }}
       >
         {children}

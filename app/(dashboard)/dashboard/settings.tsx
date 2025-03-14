@@ -45,7 +45,7 @@ export function Settings({ teamData }: { teamData: TeamDataWithMembers }) {
   return (
     <Box sx={{ flex: 1, p: { xs: 2, lg: 4 } }}>
       <Typography
-        variant="h5"
+        variant="h1"
         component="h1"
         color="textSecondary"
         gutterBottom

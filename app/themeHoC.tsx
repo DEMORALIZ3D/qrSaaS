@@ -104,9 +104,21 @@ const theme = createTheme({
       },
     },
     MuiTextField: {
+      styleOverrides: {
+        root: {
+          "& .MuiInputLabel-root": {
+            color: "#212121",
+          },
+        },
+      },
       defaultProps: {
         variant: "outlined",
         size: "small",
+        slotProps: {
+          inputLabel: {
+            shrink: true,
+          },
+        },
       },
     },
     MuiSelect: {
