@@ -4,7 +4,6 @@ import { startTransition, use, useActionState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from "lucide-react"; // This line is removed because there are no Lucide icons in this component
 import { useUser } from "@/lib/auth";
 import { updateAccount } from "@/app/(login)/actions";
 import { Box, Card, CardContent, CardHeader, Typography } from "@mui/material";

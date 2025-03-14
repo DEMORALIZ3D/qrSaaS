@@ -21,8 +21,8 @@ import {
   Menu as MenuIcon,
   Logout,
   QrCode2,
+  QrCode,
 } from "@mui/icons-material";
-import { QrCode } from "lucide-react";
 import LogoShort from "../svg/logoShort";
 import { useHeaderState } from "@/store/useHeaderState";
 

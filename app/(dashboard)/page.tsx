@@ -1,7 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { ArrowRight, CreditCard, Database } from "lucide-react";
-import { Terminal } from "./terminal";
-import { Box, Grid2, Paper, Typography } from "@mui/material";
+import { Box, Grid2, Typography } from "@mui/material";
 import Image from "next/image";
 import { Construction } from "@mui/icons-material";
 import SubscribeToMailingList from "./SubscribeToMailingList";
